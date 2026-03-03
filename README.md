@@ -1511,6 +1511,109 @@ When calling a tool:
 
 ---
 
+## <span style="color:#adbcbc">★ Recommended Agents</span>
+
+With 129 tools across 13 services, loading the full server into a single agent context can exceed practical tool-count limits and dilute focus. The patterns below partition the tool surface into purpose-built agents, each scoped to a coherent set of services. Pass the appropriate `--tools` flags (or equivalent `TOOLS` env var) when launching the server for each agent.
+
+<details>
+<summary><b>Gmail &amp; Communication Agent</b> &mdash; 19 tools &mdash; <code>--tools gmail chat</code></summary>
+
+**Purpose**: End-to-end email and team messaging. Handles inbox triage, drafting, sending, label management, filter automation, and Google Chat space communication.
+
+**Services**: Gmail (15) + Chat (4)
+
+**Tools**:
+- **Gmail**: `search_gmail_messages`, `get_gmail_message_content`, `get_gmail_messages_content_batch`, `get_gmail_attachment_content`, `send_gmail_message`, `draft_gmail_message`, `get_gmail_thread_content`, `get_gmail_threads_content_batch`, `list_gmail_labels`, `manage_gmail_label`, `list_gmail_filters`, `create_gmail_filter`, `delete_gmail_filter`, `modify_gmail_message_labels`, `batch_modify_gmail_message_labels`
+- **Chat**: `list_spaces`, `get_messages`, `send_message`, `search_messages`
+
+**Example prompt**: *"Find all unread emails from my manager this week, summarize them, and post a digest to the #standup Chat space."*
+
+```bash
+uv run main.py --tools gmail chat --transport streamable-http
+```
+
+</details>
+
+<details>
+<summary><b>Calendar &amp; Tasks Agent</b> &mdash; 18 tools &mdash; <code>--tools calendar tasks</code></summary>
+
+**Purpose**: Scheduling, availability management, and task tracking. Ideal for meeting coordination, free/busy queries, and maintaining personal or shared task lists.
+
+**Services**: Calendar (6) + Tasks (12)
+
+**Tools**:
+- **Calendar**: `list_calendars`, `get_events`, `create_event`, `modify_event`, `delete_event`, `query_freebusy`
+- **Tasks**: `list_task_lists`, `get_task_list`, `create_task_list`, `update_task_list`, `delete_task_list`, `list_tasks`, `get_task`, `create_task`, `update_task`, `delete_task`, `move_task`, `clear_completed_tasks`
+
+**Example prompt**: *"Block focus time on my calendar for every open high-priority task due this week, and mark tasks done as calendar events are completed."*
+
+```bash
+uv run main.py --tools calendar tasks --transport streamable-http
+```
+
+</details>
+
+<details>
+<summary><b>Drive &amp; Files Agent</b> &mdash; 17 tools &mdash; <code>--tools drive</code></summary>
+
+**Purpose**: File storage, organisation, and sharing. Covers searching, reading, creating, moving, copying, and fine-grained permission management for all Drive content.
+
+**Services**: Drive (17)
+
+**Tools**: `search_drive_files`, `get_drive_file_content`, `get_drive_file_download_url`, `list_drive_items`, `create_drive_file`, `import_to_google_doc`, `get_drive_file_permissions`, `check_drive_file_public_access`, `update_drive_file`, `get_drive_shareable_link`, `share_drive_file`, `batch_share_drive_file`, `update_drive_permission`, `remove_drive_permission`, `copy_drive_file`, `transfer_drive_ownership`, `set_drive_file_permissions`
+
+**Example prompt**: *"Find all PDFs shared with me in the last 30 days, copy them into a new 'Q1 Reports' folder, and generate shareable links for each."*
+
+```bash
+uv run main.py --tools drive --transport streamable-http
+```
+
+</details>
+
+<details>
+<summary><b>Documents &amp; Content Agent</b> &mdash; 40 tools &mdash; <code>--tools docs sheets slides forms</code></summary>
+
+**Purpose**: Rich document authoring and data capture. Handles long-form writing in Docs, structured data in Sheets (including conditional formatting), presentation decks in Slides, survey creation in Forms, and inline comments across all four services.
+
+**Services**: Docs (15) + Sheets (10) + Slides (5) + Forms (6) + Comments (4)
+
+**Tools**:
+- **Docs**: `search_docs`, `get_doc_content`, `list_docs_in_folder`, `create_doc`, `modify_doc_text`, `find_and_replace_doc`, `insert_doc_elements`, `insert_doc_image`, `update_doc_headers_footers`, `batch_update_doc`, `inspect_doc_structure`, `create_table_with_data`, `debug_table_structure`, `export_doc_to_pdf`, `update_paragraph_style`
+- **Sheets**: `list_spreadsheets`, `get_spreadsheet_info`, `read_sheet_values`, `modify_sheet_values`, `format_sheet_range`, `add_conditional_formatting`, `update_conditional_formatting`, `delete_conditional_formatting`, `create_spreadsheet`, `create_sheet`
+- **Slides**: `create_presentation`, `get_presentation`, `batch_update_presentation`, `get_page`, `get_page_thumbnail`
+- **Forms**: `create_form`, `get_form`, `set_publish_settings`, `get_form_response`, `list_form_responses`, `batch_update_form`
+- **Comments**: `read_comments`, `create_comment`, `reply_to_comment`, `resolve_comment`
+
+**Example prompt**: *"Read the Q1 data from the budget spreadsheet, generate a summary Doc with a table and chart descriptions, then create a Slides deck with the key figures and export it as a PDF."*
+
+```bash
+uv run main.py --tools docs sheets slides forms --transport streamable-http
+```
+
+</details>
+
+<details>
+<summary><b>Contacts &amp; Admin Agent</b> &mdash; 35 tools &mdash; <code>--tools contacts apps_script search</code></summary>
+
+**Purpose**: People management, cross-service automation, and web search. Maintains the contacts directory and groups, authors and executes Apps Script to automate multi-service workflows, and queries Programmable Search Engines.
+
+**Services**: Contacts (15) + Apps Script (17) + Search (3)
+
+**Tools**:
+- **Contacts**: `list_contacts`, `get_contact`, `search_contacts`, `create_contact`, `update_contact`, `delete_contact`, `list_contact_groups`, `get_contact_group`, `batch_create_contacts`, `batch_update_contacts`, `batch_delete_contacts`, `create_contact_group`, `update_contact_group`, `delete_contact_group`, `modify_contact_group_members`
+- **Apps Script**: `list_script_projects`, `get_script_project`, `get_script_content`, `create_script_project`, `update_script_content`, `run_script_function`, `create_deployment`, `list_deployments`, `update_deployment`, `delete_deployment`, `list_script_processes`, `delete_script_project`, `list_versions`, `create_version`, `get_version`, `get_script_metrics`, `generate_trigger_code`
+- **Search**: `search_custom`, `get_search_engine_info`, `search_custom_siterestrict`
+
+**Example prompt**: *"Search for all contacts in the 'Vendors' group, write an Apps Script that sends each a personalised email summary from a Sheets roster, deploy it, and run it."*
+
+```bash
+uv run main.py --tools contacts apps_script search --transport streamable-http
+```
+
+</details>
+
+---
+
 ## <span style="color:#adbcbc">◆ Development</span>
 
 ### <span style="color:#72898f">Project Structure</span>
